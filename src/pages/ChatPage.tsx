@@ -16,13 +16,15 @@ import loginStore from "../stores/loginStore.ts";
 
 export const ChatPage = observer(() => {
 
-    const closeChat = () => {
+    const closeChat = async () => {
+        console.log("closing")
+        await loginStore.connection?.stop();
         loginStore.setConnection(null);
     }
 
     const sendMessage = (message: string) =>{
         if(chatStore.message.trim() !== ""){
-            chatStore.pushMessage(message);
+            loginStore.connection?.invoke("SendMessage", message);
             chatStore.setMessage("");
         }
     }
@@ -32,29 +34,34 @@ export const ChatPage = observer(() => {
             <Paper elevation={4} style={{ padding: '20px', borderRadius: '16px', width: '100%', maxHeight: '80vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
                 <Container maxWidth="xl" sx={{minHeight: "50px", display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                     <Typography variant="h4" style={{ marginBottom: '20px', textAlign: 'center' }}>
-                        Chat
+                        {loginStore.chatName}
                     </Typography>
 
-                    <IconButton onClick={() => {closeChat(); console.log("closing")}}>
+                    <IconButton onClick={async () => {await closeChat();}}>
                         <CloseIcon/>
                     </IconButton>
                 </Container>
 
                 <List style={{ flexGrow: 1, overflowY: 'auto', minHeight: '50vh', maxHeight: '50vh' }}>
                     {chatStore.messages.map((message: string, index: number) => (
-                        <Paper elevation={1} sx={{width: "fit-content"}}>
-                            <ListItem
-                                key={index}
-                                sx={{
-                                    p: 1,
-                                    mb: "10px",
-                                    backgroundColor: "#f2f2f2",
-                                    borderRadius:"4px",
-                                }}
-                            >
-                                <ListItemText  primary={`${message}`}/>
-                            </ListItem>
-                        </Paper>
+                        <Container>
+                            <Typography variant="subtitle2" color="textSecondary" sx={{ fontWeight: 'bold', mb: "2px" }}>
+                                {loginStore.username}
+                            </Typography>
+                            <Paper elevation={1} sx={{width: "fit-content"}}>
+                                <ListItem
+                                    key={index}
+                                    sx={{
+                                        p: 1,
+                                        mb: "10px",
+                                        backgroundColor: "#f2f2f2",
+                                        borderRadius:"4px",
+                                    }}
+                                >
+                                    <ListItemText  primary={`${message}`}/>
+                                </ListItem>
+                            </Paper>
+                        </Container>
                     ))}
                 </List>
 

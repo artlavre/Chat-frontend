@@ -2,6 +2,7 @@
 import loginStore from "../stores/loginStore.ts";
 import {HubConnectionBuilder} from "@microsoft/signalr";
 import {observer} from "mobx-react-lite";
+import chatStore from "../stores/chatStore.ts";
 
 export const JoinChatPage = observer(() =>  {
 
@@ -14,6 +15,7 @@ export const JoinChatPage = observer(() =>  {
         connection.on("ReceiveMessage", (userName, message) => {
             console.log(message);
             console.log(userName);
+            chatStore.pushMessage(message);
         })
 
         try{

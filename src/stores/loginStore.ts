@@ -1,9 +1,11 @@
 ﻿import {makeAutoObservable} from "mobx";
+import {HubConnection} from "@microsoft/signalr";
 
 class LoginStore{
-    connection: any | null = null;
+    connection: HubConnection | null = null;
     username: string = "";
     chatName: string = "";
+    status: "idle" | "pending" | "done" | "error" = "idle";
 
     constructor() {
         makeAutoObservable(this);
